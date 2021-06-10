@@ -1,0 +1,46 @@
+version: "3.1"
+
+services:
+  # ini untuk menjalankan phpnya
+  php:
+    # image yang digunakan
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # port yang digunakan untuk mengakses
+    ports:
+      - 80:80
+    volumes:
+      # src adalah folder tempat menyimpan resource sistem atau tempat simpan index.phpnya
+      - ./src:/var/www/html
+
+  # ini untuk databasenya
+  db:
+    image: mysql:5.6.51
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      # port yang digunakan untuk mengakses tampilan db mysql dengan url : localhost/8080
+      - 8080:8080
+
+  # ini untuk tampilan phpmyadminnya
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      # port yang digunakan untuk mengakses tampilan phpmyadmin dengan url : localhost/5000
+      - "5000:80"
+
+volumes:
+  # mysql-data agar databasenya tetap tersimpan ketika di compose ulang atau dibuka kembali atau direstart dsb
+  mysql-data:
